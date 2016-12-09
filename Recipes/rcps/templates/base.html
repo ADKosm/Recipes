@@ -8,6 +8,20 @@
     <script src="{% static 'js/jquery.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
 </head>
+<div class="auth_cont">
+
+    <div class="name"><a href="/">Recipes</a></div>
+    <div class="auth">
+           {% if username %}
+               <li>You are logged as {{ username }}</li>
+               <li><a href="/logout/">Logout</a></li>
+               <li class="art"><a href="/new_recipe/">Propose Recipe</a></li>
+           {% else %}
+               <li><a href="/login/">Login</a></li>
+           {% endif %}
+    </div>
+</div>
+<div class="login">{% block login %}{% endblock %}</div>
 <body>
     <div class="container-fluid">
         {% block content %}
