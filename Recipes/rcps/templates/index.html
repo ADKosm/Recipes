@@ -1,6 +1,66 @@
 {% extends 'base.html' %}
 {% block content %}
 
-    <span class="label label-default">YOBA! I am your POTOMOK!</span>
+<script type="text/html" id="ing-list-element">
+        <input list="live-query-ing" type="text" class="form-control">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" data-id="butid">Удалить</button>
+        </span>
+</script>
+
+<script type="text/html" id="eq-list-element">
+        <input list="live-query-eq" type="text" class="form-control">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" data-id="butid">Удалить</button>
+        </span>
+</script>
+
+<h1 style="text-align: center;"> Найди свой рецепт! </h1>
+
+<h3 style="text-align: center;"><b>У меня есть ингредиенты:</b></h3>
+
+<div id="ing-list">
+    <div class="input-group ing-element" id="ing1">
+        <input list="live-query-ing" type="text" class="form-control">
+        <span class="input-group-btn">
+            <button class="btn btn-default disabled" type="button" id="ing-but-1">Удалить</button>
+        </span>
+    </div>
+</div>
+<datalist id="live-query-ing"></datalist>
+<br>
+<div>
+    <button type="button" class="btn btn-default" id="add-ing-button">Добавить ингредиент</button>
+</div>
+
+
+<h3 style="text-align: center;">
+    <form class="form-inline">
+        <div class="form-group">
+            <label for="presence" class="control-label"  type="text">Инструменты, которые у меня</label>
+            <select id="presence" class="form-control" style="width: auto;" display="inline-block">
+                <option> в наличии</option>
+                <option> не в наличии</option>
+            </select>
+        </div>
+    </form>
+</h3>
+
+
+<div id="eq-list">
+    <div class="input-group eq-element" id="eq1">
+        <input list="live-query-eq" type="text" class="form-control">
+        <span class="input-group-btn">
+            <button class="btn btn-default disabled" type="button" id="eq-but-1">Удалить</button>
+        </span>
+    </div>
+</div>
+<datalist id="live-query-eq"></datalist>
+<br>
+<div>
+    <button type="button" class="btn btn-default" id="add-eq-button">Добавить инструмент</button>
+</div>
+
+<button id="send-but" type="button" class="btn btn-default btn-lg center-block" style="font-family: 'Lobster'; ">Найти рецепты!</button>
 
 {% endblock content %}
