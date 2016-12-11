@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'Recipes.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db.psql',
+        'NAME': 'recipes',
         'USER': 'casual',
         'PASSWORD': '12345678',
         'HOST': 'localhost',
@@ -108,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
 

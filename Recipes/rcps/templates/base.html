@@ -12,19 +12,6 @@
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/index.js' %}"></script>
 </head>
-<div class="auth_cont">
-
-    <div class="name"><a href="/">Recipes</a></div>
-    <div class="auth">
-           {% if username %}
-               <li>You are logged as {{ username }}</li>
-               <li><a href="/logout/">Logout</a></li>
-               <li class="art"><a href="/new_recipe/">Propose Recipe</a></li>
-           {% else %}
-               <li><a href="/login/">Login</a></li>
-           {% endif %}
-    </div>
-</div>
 <div class="login">{% block login %}{% endblock %}</div>
 <body>
 
@@ -36,7 +23,11 @@
         </a>
     </div>
     <p class="navbar-text navbar-right navbar-login">
-        Вы вошли как <a href="#" class="navbar-link">Potomok</a> | <a href="/logout">Выйти</a>
+        {% if username %}
+            Вы вошли как <a href="#" class="navbar-link">{{ username }}</a> | <a href="/logout">Выйти</a>
+        {% else %}
+            Вы не авторизованы. <a href="/login">Авторизоваться</a>
+        {% endif %}
     </p>
   </div>
 </nav>
