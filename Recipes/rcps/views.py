@@ -13,8 +13,9 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import render
 
-# Create your views here.
 from rcps.models import Ingredient, Equipment, Recipe
+from rcps.selections import find_recipes
+# Create your views here.
 
 
 def index(request):
@@ -77,17 +78,10 @@ def search(request):
     # ings -> ингредиенты
     # equips -> инструменты
     # pres -> 1 ==  в наличии, 0 == не в наличии
-    ingredient_names = [x for x in request.GET['ings'].split(',') if x]
-    equipment_names = [x for x in request.GET['equips'].split(',') if x]
-
-    forbidden_ingredients = \
-        Ingredient.objects.exclude(ingredient_name__in=ingredient_names).values_list('id', flat=True)
-    forbidden_equipment = None
-    if request.GET['equips'] == 1:
-        forbidden_equipment = Equipment.objects.exclude(equipment_name__in=equipment_names)
-    else:
-        forbidden_equipment = Equipment.objects.filter(equipment_name__in=equipment_names)
-    forbidden_equipment = forbidden_equipment.values_list('id', flat=True)
-
-
-    return HttpResponse( request.GET['ings'] + " | " + request.GET['equips'] + " | " + request.GET['pres'])
+    ing_tuple = tuple((x for x in request.GET['ings'].split(',') if x))
+    equip_tuple = tuple((x for x in request.GET['equips'].split(',') if x))
+    equpment_is_allowed = request.GET['pres'] == '1'
+    result = find_recipes(ing_tuple, equip_tuple, equpment_is_allowed)
+    response = ('id:{}\nname:{}\nlink:{}\n'.format(x.id, x.recipe_name, x.recipe_link) for x in result)
+    response = '\n------------------------\n'.join(response)
+    return HttpResponse(response)
