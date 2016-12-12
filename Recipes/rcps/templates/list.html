@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+<script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+    })
+</script>
+
+<h3>
+    Используемые ингредиенты:
+    {% for ing in ingredients %}
+        <span class="label label-warning">{{ing}}</span>
+    {% endfor %}
+</h3>
+<h3>
+    {% if eia %}
+        Используемые
+    {% else %}
+        Не используемые
+    {% endif %}
+    инструменты:
+    {% for eq in equipments %}
+        <span class="label label-warning">{{eq}}</span>
+    {% endfor %}
+</h3>
+<br>
+{% for recipe in recipes %}
+
+<div class="panel panel-success">
+  <div class="panel-heading">
+       <h4>{{recipe.recipe_name}}</h4>
+  </div>
+  <div class="panel-body">
+      <div id="link{{recipe.id}}"></div>
+      <script>
+          (function () {
+              var id = "#link{{recipe.id}}";
+              var reg = /(\S+)watch\?v=(\w+)/;
+              var link = "{{recipe.recipe_link}}";
+              if(!reg.test(link)){
+                  $(id).append('<iframe src="'+link.replace(reg, "https://www.youtube.com/embed/$2")+'" class="embed-responsive-item" frameborder="0" allowfullscreen width="672" height="378"></iframe>')
+              } else {
+                  $(id).append('<a href="'+link+'" class="thumbnail" data-toggle="tooltip" data-placement="bottom" title="Внешняя ссылка"><img src="{% static "img/Insert-hyperlink-icon.png" %}" alt="Link"></a>');
+                  $(id).attr('style', 'max-width: 200px');
+              }
+          })();
+      </script>
+  </div>
+  <div class="panel-footer">
+      Теги:
+      {% for tag in recipe.tag_set.all %}
+        <span class="label label-success">{{tag.tag_name }}</span>
+      {% endfor %}
+  </div>
+</div>
+
+{% endfor %}
+
+{% endblock %}

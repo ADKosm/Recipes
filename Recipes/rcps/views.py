@@ -82,6 +82,11 @@ def search(request):
     equip_tuple = tuple((x for x in request.GET['equips'].split(',') if x))
     equpment_is_allowed = request.GET['pres'] == '1'
     result = find_recipes(ing_tuple, equip_tuple, equpment_is_allowed)
-    response = ('id:{}\nname:{}\nlink:{}\n'.format(x.id, x.recipe_name, x.recipe_link) for x in result)
-    response = '\n------------------------\n'.join(response)
-    return HttpResponse(response)
+    #response = ('id:{}\nname:{}\nlink:{}\n'.format(x.id, x.recipe_name, x.recipe_link) for x in result)
+    #response = '\n------------------------\n'.join(response)
+    return render(request, 'list.html', {
+        'recipes': result,
+        'ingredients': ing_tuple,
+        'equipments': equip_tuple,
+        'eia': equpment_is_allowed
+    })#HttpResponse(response)
