@@ -62,7 +62,6 @@ class Ingredient(models.Model):
 class IngredientAlternative(models.Model):
     ingredients = models.ManyToManyField(Ingredient, through='AlternativeConsists', related_name='ingredients')
 
-    alternative_quality = models.IntegerField()
 
     def __str__(self):
         return ', '.join((x[0] for x in self.ingredients.values_list('ingredient_name')))
@@ -86,6 +85,7 @@ class Consist(models.Model):
 class IngredientReplacement(models.Model):
     ingredient_entry = models.ForeignKey(Consist)
     alternative = models.ForeignKey(IngredientAlternative)
+    alternative_quality = models.IntegerField()
 
     def __str__(self):
         recipe_name = self.ingredient_entry.recipe.__str__()
