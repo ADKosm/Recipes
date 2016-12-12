@@ -131,10 +131,13 @@
             </a>
         {% endif %}
         {% for comm in recipe.comment_set.all %}
-            <a class="list-group-item">
-                <h4 class="list-group-item-heading"><small>{{comm.comment_date}}</small><br><b>{{comm.comment_author.username}}</b></h4>
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">
+                    <small>{{comm.comment_date}}</small><br>
+                    <b><a href="{% url 'user_page' comm.comment_author.id %}">{{comm.comment_author.username}}</a></b>
+                </h4>
                 <p class="list-group-item-text">{{comm.comment_text|safe}}</p>
-            </a>
+            </div>
         {% endfor %}
     </div>
 </div>

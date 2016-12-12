@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^live_query_eq', views.liveEq, name='liveEq'),
     url(r'^search', views.search, name='search'),
     url(r'^recipe/(?P<recipe_id>[0-9]+)', views.recipe, name='recipe'),
-    url(r'^send_comment', views.send_comment, name='send_comment')
+    url(r'^send_comment', views.send_comment, name='send_comment'),
+    url(r'^user_page/(?P<user_id>[0-9]+)', views.user_page, name='user_page')
 ]

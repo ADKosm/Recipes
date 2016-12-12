@@ -6,6 +6,7 @@ from django.template.loader import get_template
 from django.template import Context
 from django.contrib import auth
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.template.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import Form
@@ -19,7 +20,7 @@ from rcps.selections import find_recipes
 
 
 def index(request):
-    context = {'username': auth.get_user(request).username}
+    context = {'username': auth.get_user(request)}
     return render(request, 'index.html', context)
 
 def liveIng(request):
@@ -89,14 +90,14 @@ def search(request):
         'ingredients': ing_tuple,
         'equipments': equip_tuple,
         'eia': equpment_is_allowed,
-        'username': auth.get_user(request).username
+        'username': auth.get_user(request)
     })#HttpResponse(response)
 
 def recipe(request, recipe_id):
     currect_recipe = Recipe.objects.get(pk=recipe_id)
     return render(request, 'recipe.html', {
         'recipe': currect_recipe,
-        'username': auth.get_user(request).username
+        'username': auth.get_user(request)
     })
 
 def send_comment(request):
@@ -110,3 +111,10 @@ def send_comment(request):
         return redirect('/recipe/{0}'.format(request.POST['recipe_id']))
     else:
         return HttpResponse('Unauthorized', status=401)
+
+def user_page(request, user_id):
+    current_user = User.objects.get(pk=user_id)
+    return render(request, 'user_page.html', {
+        'user': current_user,
+        'username': auth.get_user(request)
+    })

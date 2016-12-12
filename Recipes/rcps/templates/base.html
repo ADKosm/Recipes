@@ -24,7 +24,7 @@
     </div>
     <p class="navbar-text navbar-right navbar-login">
         {% if username %}
-            Вы вошли как <a href="#" class="navbar-link">{{ username }}</a> | <a href="/logout">Выйти</a>
+            Вы вошли как <a href="{% url 'user_page' username.id %}" class="navbar-link">{{ username.username }}</a> | <a href="/logout">Выйти</a>
         {% else %}
             Вы не авторизованы. <a href="/login">Авторизоваться</a>
         {% endif %}
