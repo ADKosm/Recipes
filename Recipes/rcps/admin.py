@@ -16,12 +16,19 @@ class EquipmentInline(admin.TabularInline):
     verbose_name_plural = 'Инструменты'
 
 
+class TagInline(admin.TabularInline):
+    model = Tag.tag_recipes.through
+    verbose_name = 'Тег'
+    verbose_name_plural = 'Теги'
+
+
 class RecipeAdmin(admin.ModelAdmin):
     model = Recipe
     fields = ['recipe_name', 'recipe_link']
     inlines = (
         IngredientToRecipeInline,
-        EquipmentInline
+        EquipmentInline,
+        TagInline,
     )
 
 
@@ -45,3 +52,4 @@ admin.site.register(IngredientCategory)
 admin.site.register(Equipment)
 admin.site.register(EquipmentCategory)
 admin.site.register(IngredientReplacement)
+admin.site.register(Tag)
