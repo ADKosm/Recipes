@@ -4,9 +4,9 @@
 {% load static %}
 
 <script>
-    $(function () {
+    $(document).ready(function() {
       $('[data-toggle="tooltip"]').tooltip();
-    })
+    });
 </script>
 
 <h3>
@@ -31,7 +31,9 @@
 
 <div class="panel panel-success">
   <div class="panel-heading">
-       <h4>{{recipe.recipe_name}}</h4>
+       <h4>
+           <a href="{% url 'recipe' recipe.id %}">{{recipe.recipe_name}}</a>
+       </h4>
   </div>
   <div class="panel-body">
       <div id="link{{recipe.id}}"></div>
@@ -40,7 +42,7 @@
               var id = "#link{{recipe.id}}";
               var reg = /(\S+)watch\?v=(\w+)/;
               var link = "{{recipe.recipe_link}}";
-              if(!reg.test(link)){
+              if(reg.test(link)){
                   $(id).append('<iframe src="'+link.replace(reg, "https://www.youtube.com/embed/$2")+'" class="embed-responsive-item" frameborder="0" allowfullscreen width="672" height="378"></iframe>')
               } else {
                   $(id).append('<a href="'+link+'" class="thumbnail" data-toggle="tooltip" data-placement="bottom" title="Внешняя ссылка"><img src="{% static "img/Insert-hyperlink-icon.png" %}" alt="Link"></a>');

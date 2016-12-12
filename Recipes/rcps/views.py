@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.http.response import HttpResponse, Http404
@@ -13,7 +13,7 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from rcps.models import Ingredient, Equipment, Recipe
+from rcps.models import Ingredient, Equipment, Recipe, Comment
 from rcps.selections import find_recipes
 # Create your views here.
 
@@ -88,5 +88,25 @@ def search(request):
         'recipes': result,
         'ingredients': ing_tuple,
         'equipments': equip_tuple,
-        'eia': equpment_is_allowed
+        'eia': equpment_is_allowed,
+        'username': auth.get_user(request).username
     })#HttpResponse(response)
+
+def recipe(request, recipe_id):
+    currect_recipe = Recipe.objects.get(pk=recipe_id)
+    return render(request, 'recipe.html', {
+        'recipe': currect_recipe,
+        'username': auth.get_user(request).username
+    })
+
+def send_comment(request):
+    username = auth.get_user(request)
+    if username:
+        current_recipe = Recipe.objects.get(pk=request.POST['recipe_id'])
+        new_comment = Comment(comment_author=username,
+                              comment_recipe=current_recipe,
+                              comment_text=request.POST['comment'])
+        new_comment.save()
+        return redirect('/recipe/{0}'.format(request.POST['recipe_id']))
+    else:
+        return HttpResponse('Unauthorized', status=401)

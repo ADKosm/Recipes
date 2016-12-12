@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+<link href="{% static 'summernote/summernote.css' %}" rel="stylesheet">
+<script src="{% static 'summernote/summernote.min.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#comment').summernote({
+            height: 200,
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+          ]
+        });
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
+<div class="panel panel-success">
+  <div class="panel-heading">
+       <h4>
+           <a href="{% url 'recipe' recipe.id %}">{{recipe.recipe_name}}</a>
+       </h4>
+  </div>
+  <div class="panel-body">
+      <div id="link{{recipe.id}}"></div>
+      <script>
+          (function () {
+              var id = "#link{{recipe.id}}";
+              var reg = /(\S+)watch\?v=(\w+)/;
+              var link = "{{recipe.recipe_link}}";
+              if(reg.test(link)){
+                  $(id).append('<iframe src="'+link.replace(reg, "https://www.youtube.com/embed/$2")+'" class="embed-responsive-item" frameborder="0" allowfullscreen width="672" height="378"></iframe>')
+              } else {
+                  $(id).append('<a href="'+link+'" class="thumbnail" data-toggle="tooltip" data-placement="bottom" title="Внешняя ссылка"><img src="{% static "img/Insert-hyperlink-icon.png" %}" alt="Link"></a>');
+                  $(id).attr('style', 'max-width: 200px');
+              }
+          })();
+      </script>
+  </div>
+    <div class="panel-body">
+        <h4>Ингредиенты:</h4>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th> <th>Название ингредиента</th> <th>Количество</th> <th>Возможна замена на</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cons in recipe.consist_set.all %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th> <td>{{cons.ingredient.ingredient_name}}</td> <td>{{cons.quantity}}</td>
+
+                    <td>
+                        {% for r in cons.ingredientreplacement_set.all %}
+                            {% if forloop.counter > 1%}
+                                <hr>
+                            {% endif %}
+
+                            {%for ingalt in r.alternative.alternativeconsists_set.all%}
+                                {% if forloop.counter > 1%}
+                                    <br>
+                                {% endif%}
+                                {{ingalt.ingredient.ingredient_name}} → {{ingalt.quantity}}
+                            {% endfor %}
+                        {% endfor %}
+                        <!--@mdo <br> @dsadas <hr> @mdoo-->
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <div class="panel-body">
+        <h4>Инcтрументы:</h4>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th> <th>Название инструмента</th> <th>Возможна замена на</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for eq in recipe.equipment_set.all %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th> <td>{{eq.equipment_name}}</td>
+
+                    <td>
+                        {% for r in eq.alternatives.all %}
+                            {% if forloop.counter > 1%}
+                                <hr>
+                            {% endif %}
+
+                            {{r.equipment_name}}
+                        {% endfor %}
+                        <!--@mdo <br> @dsadas <hr> @mdoo-->
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+  <div class="panel-footer">
+      Теги:
+      {% for tag in recipe.tag_set.all %}
+        <span class="label label-success">{{tag.tag_name }}</span>
+      {% endfor %}
+  </div>
+</div>
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Комментарии
+    </div>
+    <div class="list-group">
+        {% if not recipe.comment_set.all %}
+            <a class="list-group-item">
+                <h4 class="list-group-item-heading">Нет комментариев</h4>
+                <p class="list-group-item-text">Ты можешь быть первым</p>
+            </a>
+        {% endif %}
+        {% for comm in recipe.comment_set.all %}
+            <a class="list-group-item">
+                <h4 class="list-group-item-heading"><small>{{comm.comment_date}}</small><br><b>{{comm.comment_author.username}}</b></h4>
+                <p class="list-group-item-text">{{comm.comment_text|safe}}</p>
+            </a>
+        {% endfor %}
+    </div>
+</div>
+
+<form id="comment_form" method="post" action="/send_comment">
+    {% csrf_token %}
+</form>
+
+<textarea id="comment" name="comment" form="comment_form"></textarea>
+<input name="recipe_id" value="{{recipe.id}}" hidden form="comment_form">
+
+{% if username %}
+    <button class="btn btn-default btn-lg center-block" type="submit" form="comment_form">Отправить</button>
+{% else %}
+    <button class="btn btn-default btn-lg center-block disabled" data-toggle="tooltip" data-placement="top" title="Вы не авторизованы">Отправить</button>
+{% endif %}
+
+<br>
+
+
+{% endblock %}
