@@ -49,6 +49,8 @@ with allowed_equipment as (                          -- сюда нужно вс
 
 def find_recipes(allowed_ingredients: tuple, equipment: tuple, equipment_is_allowed: bool):
     entrance_modifier = '' if equipment_is_allowed else 'not'
+    allowed_ingredients = "('{}')".format("', '".join(allowed_ingredients))
+    equipment = "('{}')".format("', '".join(equipment))
     query = _find_recipe_query_fmt.format(is_equipment_allowed=entrance_modifier,
                                           equipment_tuple=equipment,
                                           allowed_ingredients=allowed_ingredients)
