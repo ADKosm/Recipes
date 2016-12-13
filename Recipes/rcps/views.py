@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.http.response import HttpResponse, Http404
@@ -6,6 +6,7 @@ from django.template.loader import get_template
 from django.template import Context
 from django.contrib import auth
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.template.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import Form
@@ -13,13 +14,13 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from rcps.models import Ingredient, Equipment, Recipe
+from rcps.models import Ingredient, Equipment, Recipe, Comment, Tag
 from rcps.selections import find_recipes
 # Create your views here.
 
 
 def index(request):
-    context = {'username': auth.get_user(request).username}
+    context = {'username': auth.get_user(request)}
     return render(request, 'index.html', context)
 
 def liveIng(request):
@@ -82,6 +83,54 @@ def search(request):
     equip_tuple = tuple((x for x in request.GET['equips'].split(',') if x))
     equpment_is_allowed = request.GET['pres'] == '1'
     result = find_recipes(ing_tuple, equip_tuple, equpment_is_allowed)
-    response = ('id:{}\nname:{}\nlink:{}\n'.format(x.id, x.recipe_name, x.recipe_link) for x in result)
-    response = '\n------------------------\n'.join(response)
-    return HttpResponse(response)
+    #response = ('id:{}\nname:{}\nlink:{}\n'.format(x.id, x.recipe_name, x.recipe_link) for x in result)
+    #response = '\n------------------------\n'.join(response)
+    return render(request, 'list.html', {
+        'recipes': result,
+        'ingredients': ing_tuple,
+        'equipments': equip_tuple,
+        'eia': equpment_is_allowed,
+        'username': auth.get_user(request)
+    })#HttpResponse(response)
+
+def recipe(request, recipe_id):
+    currect_recipe = Recipe.objects.get(pk=recipe_id)
+    return render(request, 'recipe.html', {
+        'recipe': currect_recipe,
+        'username': auth.get_user(request)
+    })
+
+def send_comment(request):
+    username = auth.get_user(request)
+    if username:
+        current_recipe = Recipe.objects.get(pk=request.POST['recipe_id'])
+        new_comment = Comment(comment_author=username,
+                              comment_recipe=current_recipe,
+                              comment_text=request.POST['comment'])
+        new_comment.save()
+        return redirect('/recipe/{0}'.format(request.POST['recipe_id']))
+    else:
+        return HttpResponse('Unauthorized', status=401)
+
+def user_page(request, user_id):
+    current_user = User.objects.get(pk=user_id)
+    return render(request, 'user_page.html', {
+        'user': current_user,
+        'username': auth.get_user(request)
+    })
+
+def tags(request):
+    all_tags = Tag.objects.all()
+    return render(request, 'tags.html', {
+        'tags': all_tags,
+        'username': auth.get_user(request)
+    })
+
+def tag(request, tag_id):
+    current_tag = Tag.objects.get(pk=tag_id)
+    recipes = current_tag.tag_recipes.all()
+    return render(request, 'list.html', {
+        'recipes': recipes,
+        'tag': current_tag,
+        'username': auth.get_user(request)
+    })
