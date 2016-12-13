@@ -114,7 +114,7 @@
   <div class="panel-footer">
       Теги:
       {% for tag in recipe.tag_set.all %}
-        <span class="label label-success">{{tag.tag_name }}</span>
+        <a href="{% url 'tag' tag.id %}"> <span class="label label-success">{{tag.tag_name }}</span></a>
       {% endfor %}
   </div>
 </div>
@@ -136,7 +136,7 @@
                     <small>{{comm.comment_date}}</small><br>
                     <b><a href="{% url 'user_page' comm.comment_author.id %}">{{comm.comment_author.username}}</a></b>
                 </h4>
-                <p class="list-group-item-text">{{comm.comment_text|safe}}</p>
+                <blockquote><p class="list-group-item-text">{{comm.comment_text|safe}}</p></blockquote>
             </div>
         {% endfor %}
     </div>

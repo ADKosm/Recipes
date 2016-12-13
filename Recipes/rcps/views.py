@@ -14,7 +14,7 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from rcps.models import Ingredient, Equipment, Recipe, Comment
+from rcps.models import Ingredient, Equipment, Recipe, Comment, Tag
 from rcps.selections import find_recipes
 # Create your views here.
 
@@ -116,5 +116,21 @@ def user_page(request, user_id):
     current_user = User.objects.get(pk=user_id)
     return render(request, 'user_page.html', {
         'user': current_user,
+        'username': auth.get_user(request)
+    })
+
+def tags(request):
+    all_tags = Tag.objects.all()
+    return render(request, 'tags.html', {
+        'tags': all_tags,
+        'username': auth.get_user(request)
+    })
+
+def tag(request, tag_id):
+    current_tag = Tag.objects.get(pk=tag_id)
+    recipes = current_tag.tag_recipes.all()
+    return render(request, 'list.html', {
+        'recipes': recipes,
+        'tag': current_tag,
         'username': auth.get_user(request)
     })

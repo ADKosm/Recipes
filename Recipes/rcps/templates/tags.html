@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3 style="text-align: center;">Категории: </h3>
+<br>
+<div class="list-group">
+    {% for tag in tags %}
+        <a href="{% url 'tag' tag.id %}" class="list-group-item">
+            <span class="badge">{{tag.tag_recipes.count}}</span>
+            {{tag.tag_name}}
+        </a>
+    {% endfor %}
+</div>
+
+{% endblock %}

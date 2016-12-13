@@ -9,24 +9,35 @@
     });
 </script>
 
-<h3>
-    Используемые ингредиенты:
-    {% for ing in ingredients %}
-        <span class="label label-warning">{{ing}}</span>
-    {% endfor %}
-</h3>
-<h3>
-    {% if eia %}
-        Используемые
-    {% else %}
-        Не используемые
-    {% endif %}
-    инструменты:
-    {% for eq in equipments %}
-        <span class="label label-warning">{{eq}}</span>
-    {% endfor %}
-</h3>
+{% if ingredients %}
+    <h3>
+        Используемые ингредиенты:
+        {% for ing in ingredients %}
+            <span class="label label-warning">{{ing}}</span>
+        {% endfor %}
+    </h3>
+{% endif %}
+{% if equipments %}
+    <h3>
+        {% if eia %}
+            Используемые
+        {% else %}
+            Не используемые
+        {% endif %}
+        инструменты:
+        {% for eq in equipments %}
+            <span class="label label-warning">{{eq}}</span>
+        {% endfor %}
+    </h3>
+{% endif %}
+{% if tag %}
+    <h3>
+        Категория: <span class="label label-warning">{{tag.tag_name}}</span>
+    </h3>
+{% endif %}
+
 <br>
+
 {% for recipe in recipes %}
 
 <div class="panel panel-success">
@@ -54,11 +65,13 @@
   <div class="panel-footer">
       Теги:
       {% for tag in recipe.tag_set.all %}
-        <span class="label label-success">{{tag.tag_name }}</span>
+        <a href="{% url 'tag' tag.id %}"> <span class="label label-success">{{tag.tag_name }}</span></a>
       {% endfor %}
   </div>
 </div>
 
+{% empty %}
+    <h2 style="text-align: center;">Рецептов не нашлось 😟</h2>
 {% endfor %}
 
 {% endblock %}
