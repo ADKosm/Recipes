@@ -149,7 +149,7 @@
 <textarea id="comment" name="comment" form="comment_form"></textarea>
 <input name="recipe_id" value="{{recipe.id}}" hidden form="comment_form">
 
-{% if username %}
+{% if username.username %}
     <button class="btn btn-default btn-lg center-block" type="submit" form="comment_form">Отправить</button>
 {% else %}
     <button class="btn btn-default btn-lg center-block disabled" data-toggle="tooltip" data-placement="top" title="Вы не авторизованы">Отправить</button>

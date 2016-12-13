@@ -26,7 +26,7 @@
         <a href="/tags">По категориям</a>
     </p>
     <p class="navbar-text navbar-right navbar-login">
-        {% if username %}
+        {% if username.username %}
             Вы вошли как <a href="{% url 'user_page' username.id %}" class="navbar-link">{{ username.username }}</a> | <a href="/logout">Выйти</a>
         {% else %}
             Вы не авторизованы. <a href="/login">Авторизоваться</a>
