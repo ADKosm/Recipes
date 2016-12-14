@@ -25,6 +25,9 @@
     <p class="navbar-text" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
         <a href="/tags">По категориям</a>
     </p>
+    <p class="navbar-text" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
+        <a href="/mostcommented">Самые комментируемые</a>
+    </p>
     <p class="navbar-text navbar-right navbar-login">
         {% if username.username %}
             Вы вошли как <a href="{% url 'user_page' username.id %}" class="navbar-link">{{ username.username }}</a> | <a href="/logout">Выйти</a>

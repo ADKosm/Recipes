@@ -56,3 +56,25 @@ def find_recipes(allowed_ingredients: tuple, equipment: tuple, equipment_is_allo
                                           allowed_ingredients=allowed_ingredients)
     print(query)
     return Recipe.objects.raw(query)
+
+
+_most_commented_recipes_query = '''
+WITH recipe_comments as (
+    SELECT DISTINCT
+      r.id id,
+      count(1) comment_num
+    FROM
+      rcps_recipe r
+      JOIN rcps_comment c ON r.id = c.comment_recipe_id
+    GROUP BY r.id
+) select r.*
+  from rcps_recipe r join recipe_comments rc on r.id = rc.id
+  order by comment_num desc
+'''
+
+
+def most_commented_recipes(limit=0):
+    query = _most_commented_recipes_query
+    if limit:
+        query += 'limit {}'.format(limit)
+    return Recipe.objects.raw(query)

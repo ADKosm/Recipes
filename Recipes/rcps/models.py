@@ -14,8 +14,15 @@ class Recipe(models.Model):
     graders = models.ManyToManyField(User, through='Grade', related_name='graders')
 
     def __str__(self):
-
         return self.recipe_name
+
+    @property
+    def comments_count(self):
+        result = len(self.comment_set)
+        print('==========len = {}============'.format(result))
+        return result
+
+
 
 
 class EquipmentCategory(models.Model):

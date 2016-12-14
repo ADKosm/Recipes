@@ -15,7 +15,9 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 from rcps.models import Ingredient, Equipment, Recipe, Comment, Tag
-from rcps.selections import find_recipes
+from rcps.selections import find_recipes, most_commented_recipes
+
+
 # Create your views here.
 
 
@@ -133,4 +135,12 @@ def tag(request, tag_id):
         'recipes': recipes,
         'tag': current_tag,
         'username': auth.get_user(request)
+    })
+
+
+def most_commented(request):
+    recipes = most_commented_recipes()
+    return render(request, 'list.html', {
+        'recipes': recipes,
+        'mostcommented': True,
     })
