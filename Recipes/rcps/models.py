@@ -108,7 +108,7 @@ class Comment(models.Model):
 
 
 class Grade(models.Model):
-    grade_stars = models.IntegerField()
+    grade_stars = models.IntegerField(null=True)
     grade_favorite = models.BooleanField(default=False)
     grader = models.ForeignKey(User)
     grade_recipe = models.ForeignKey(Recipe)

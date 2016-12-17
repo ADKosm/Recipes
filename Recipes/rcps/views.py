@@ -143,10 +143,15 @@ def most_commented(request):
     return render(request, 'list.html', {
         'recipes': recipes,
         'mostcommented': True,
+        'username': auth.get_user(request)
     })
 
 def by_rating(request):
-    pass
+    recipes_by_rating = Recipe.objects.all()
+    return render(request, 'list.html', {
+        'recipes': recipes_by_rating,
+        'username': auth.get_user(request)
+    })
 
 def get_rating(request):
     res = Grade.objects.filter(grade_recipe=request.GET['id']).aggregate(avg=Avg('grade_stars'))
@@ -158,8 +163,35 @@ def add_rating(request):
     rec = Recipe.objects.get(pk=request.GET['id'])
     value = request.GET['val']
     user = auth.get_user(request)
-    gr, created = Grade.objects.get_or_create(grader=user, grade_recipe=rec, defaults={'grade_stars': value})
-    if not created:
-        gr.grade_stars = value
-        gr.save()
+    gr, created = Grade.objects.get_or_create(grader=user, grade_recipe=rec)
+    gr.grade_stars = value
+    gr.save()
     return JsonResponse({'status': 'ok'})
+
+def add_favourite(request):
+    rec = Recipe.objects.get(pk=request.GET['id'])
+    user = auth.get_user(request)
+    if Grade.objects.filter(grader=user, grade_recipe=rec).exists():
+        gr = Grade.objects.get(grader=user, grade_recipe=rec)
+        gr.grade_favorite = not gr.grade_favorite
+        gr.save()
+    else:
+        gr = Grade.objects.create(grader=user, grade_recipe=rec, grade_favorite=True)
+    return JsonResponse({'status': 'ok'})
+
+def check_favourite(request):
+    rec = Recipe.objects.get(pk=request.GET['id'])
+    user = auth.get_user(request)
+    if Grade.objects.filter(grader=user, grade_recipe=rec).exists():
+        gr = Grade.objects.get(grader=user, grade_recipe=rec)
+        return JsonResponse({'fav': gr.grade_favorite})
+    else:
+        return JsonResponse({'fav': False})
+
+def favourite(request):
+    user = auth.get_user(request)
+    favourite_recipes = Recipe.objects.all()
+    return render(request, 'list.html', {
+        'recipes': favourite_recipes,
+        'username': auth.get_user(request)
+    })

@@ -16,6 +16,22 @@
             $("#input-rating").rating('update', parseFloat(msg.rating));
         });
     };
+
+    var chackFav = function () {
+        var recipe_id = {{recipe.id}};
+        $.ajax({
+            url: "/is_fav",
+            data: {id: recipe_id},
+            dataType: "json"
+        }).done(function (msg) {
+            if(msg.fav){
+                $("#fav").attr('class', "glyphicon glyphicon-star");
+            } else {
+                $("#fav").attr('class', "glyphicon glyphicon-star-empty")
+            }
+        });
+    };
+
     $(document).ready(function() {
         $('#comment').summernote({
             height: 200,
@@ -48,7 +64,6 @@
         });
 
         $("#input-rating").on('rating.change', function (event, value) {
-            var recipe_id = {{recipe.id}};
             $.ajax({
                 url: "/add_rating",
                 data: { id: recipe_id, val: value},
@@ -58,7 +73,19 @@
             });
         });
 
+        $("#fav").click(function () {
+            var recipe_id = {{recipe.id}};
+            $.ajax({
+                url: "/add_fav",
+                data: {id: recipe_id},
+                dataType: "json"
+            }).done(function(msg){
+                chackFav();
+            });
+        });
+
         updateRating();
+        chackFav();
 
     });
 </script>
@@ -68,6 +95,7 @@
       <div class="row">
           <div class="col-xs-6 text-left">
                <h4>
+                   <i id="fav" style="cursor: pointer;"></i>
                    <a href="{% url 'recipe' recipe.id %}">{{recipe.recipe_name}}</a>
                </h4>
           </div>
