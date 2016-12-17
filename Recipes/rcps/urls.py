@@ -15,4 +15,10 @@ urlpatterns = [
     url(r'^tags', views.tags, name='tag'),
     url(r'^tag/(?P<tag_id>[0-9]+)', views.tag, name='tag'),
     url(r'^mostcommented/', views.most_commented),
+    url(r'^rating', views.by_rating, name="rating"),
+    url(r'^get_rating', views.get_rating, name="get_rating"),
+    url(r'^add_rating', views.add_rating, name="add_rating"),
+    url(r'^add_fav', views.add_favourite, name="add_fav"),
+    url(r'^is_fav', views.check_favourite, name="check_fav"),
+    url(r'^favourite', views.favourite, name="favourite"),
 ]

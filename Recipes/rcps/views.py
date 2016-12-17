@@ -13,8 +13,8 @@ from django.forms import Form
 import json
 from django.http import JsonResponse
 from django.shortcuts import render
-
-from rcps.models import Ingredient, Equipment, Recipe, Comment, Tag
+from django.db.models import Avg
+from rcps.models import Ingredient, Equipment, Recipe, Comment, Tag, Grade
 from rcps.selections import find_recipes, most_commented_recipes
 
 
@@ -143,4 +143,77 @@ def most_commented(request):
     return render(request, 'list.html', {
         'recipes': recipes,
         'mostcommented': True,
+        'username': auth.get_user(request)
+    })
+
+def by_rating(request):
+    recipes_by_rating = Recipe.objects.raw('''
+        with ratings as (
+          SELECT DISTINCT
+            r.id,
+            case when avg(g.grade_stars) is null
+              then 0
+              else avg(g.grade_stars)
+            end rating
+          FROM rcps_recipe r
+            left JOIN rcps_grade g ON r.id = g.grade_recipe_id
+          group by r.id
+        ) select rec.*
+          from rcps_recipe rec
+            join ratings rat on rec.id = rat.id
+          ORDER BY rating DESC
+    ''')
+    return render(request, 'list.html', {
+        'recipes': recipes_by_rating,
+        'username': auth.get_user(request)
+    })
+
+def get_rating(request):
+    res = Grade.objects.filter(grade_recipe=request.GET['id']).aggregate(avg=Avg('grade_stars'))
+    if res['avg'] == None:
+        return JsonResponse({'rating': 0})
+    return JsonResponse({'rating': res['avg']})
+
+def add_rating(request):
+    rec = Recipe.objects.get(pk=request.GET['id'])
+    value = request.GET['val']
+    user = auth.get_user(request)
+    gr, created = Grade.objects.get_or_create(grader=user, grade_recipe=rec)
+    gr.grade_stars = value
+    gr.save()
+    return JsonResponse({'status': 'ok'})
+
+def add_favourite(request):
+    rec = Recipe.objects.get(pk=request.GET['id'])
+    user = auth.get_user(request)
+    if Grade.objects.filter(grader=user, grade_recipe=rec).exists():
+        gr = Grade.objects.get(grader=user, grade_recipe=rec)
+        gr.grade_favorite = not gr.grade_favorite
+        gr.save()
+    else:
+        gr = Grade.objects.create(grader=user, grade_recipe=rec, grade_favorite=True)
+    return JsonResponse({'status': 'ok'})
+
+def check_favourite(request):
+    rec = Recipe.objects.get(pk=request.GET['id'])
+    user = auth.get_user(request)
+    if Grade.objects.filter(grader=user, grade_recipe=rec).exists():
+        gr = Grade.objects.get(grader=user, grade_recipe=rec)
+        return JsonResponse({'fav': gr.grade_favorite})
+    else:
+        return JsonResponse({'fav': False})
+
+def favourite(request):
+    user = auth.get_user(request)
+    favourite_recipes = Recipe.objects.raw('''
+        select r.*
+        from (select * from auth_user where id = {user_id}) u
+        join rcps_grade g on u.id = g.grader_id
+        join rcps_recipe r on g.grade_recipe_id = r.id
+        where g.grade_favorite = true
+        order by g.grade_stars
+    '''.format(user_id=user.id))
+    return render(request, 'list.html', {
+        'recipes': favourite_recipes,
+        'username': auth.get_user(request)
     })

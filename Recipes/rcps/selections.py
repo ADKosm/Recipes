@@ -62,10 +62,10 @@ _most_commented_recipes_query = '''
 WITH recipe_comments as (
     SELECT DISTINCT
       r.id id,
-      count(1) comment_num
+      count(c.id) comment_num
     FROM
       rcps_recipe r
-      JOIN rcps_comment c ON r.id = c.comment_recipe_id
+      left JOIN rcps_comment c ON r.id = c.comment_recipe_id
     GROUP BY r.id
 ) select r.*
   from rcps_recipe r join recipe_comments rc on r.id = rc.id
