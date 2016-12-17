@@ -13,8 +13,8 @@ from django.forms import Form
 import json
 from django.http import JsonResponse
 from django.shortcuts import render
-
-from rcps.models import Ingredient, Equipment, Recipe, Comment, Tag
+from django.db.models import Avg
+from rcps.models import Ingredient, Equipment, Recipe, Comment, Tag, Grade
 from rcps.selections import find_recipes, most_commented_recipes
 
 
@@ -144,3 +144,22 @@ def most_commented(request):
         'recipes': recipes,
         'mostcommented': True,
     })
+
+def by_rating(request):
+    pass
+
+def get_rating(request):
+    res = Grade.objects.filter(grade_recipe=request.GET['id']).aggregate(avg=Avg('grade_stars'))
+    if res['avg'] == None:
+        return JsonResponse({'rating': 0})
+    return JsonResponse({'rating': res['avg']})
+
+def add_rating(request):
+    rec = Recipe.objects.get(pk=request.GET['id'])
+    value = request.GET['val']
+    user = auth.get_user(request)
+    gr, created = Grade.objects.get_or_create(grader=user, grade_recipe=rec, defaults={'grade_stars': value})
+    if not created:
+        gr.grade_stars = value
+        gr.save()
+    return JsonResponse({'status': 'ok'})

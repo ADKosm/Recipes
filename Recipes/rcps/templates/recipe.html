@@ -6,6 +6,16 @@
 <link href="{% static 'summernote/summernote.css' %}" rel="stylesheet">
 <script src="{% static 'summernote/summernote.min.js' %}"></script>
 <script>
+    var updateRating = function () {
+        var recipe_id = {{recipe.id}};
+        $.ajax({
+            url: "/get_rating",
+            data: { id: recipe_id},
+            dataType: "json"
+        }).done(function(msg){
+            $("#input-rating").rating('update', parseFloat(msg.rating));
+        });
+    };
     $(document).ready(function() {
         $('#comment').summernote({
             height: 200,
@@ -19,14 +29,52 @@
           ]
         });
         $('[data-toggle="tooltip"]').tooltip();
+        {% if not username.username %}
+            $('#comment').summernote('disable');
+        {% endif %}
+
+        $("#input-rating").rating({
+            size: 'xs',
+            showClear: false,
+            showCaption: false,
+            min: 0,
+            max: 5,
+            step:1,
+            emptyStar: '<i class="glyphicon glyphicon-apple"></i>',
+            filledStar: '<i class="glyphicon glyphicon-apple"></i>',
+            {% if not username.username %}
+                disabled: true,
+            {% endif %}
+        });
+
+        $("#input-rating").on('rating.change', function (event, value) {
+            var recipe_id = {{recipe.id}};
+            $.ajax({
+                url: "/add_rating",
+                data: { id: recipe_id, val: value},
+                dataType: "json"
+            }).done(function(msg){
+                updateRating();
+            });
+        });
+
+        updateRating();
+
     });
 </script>
 
 <div class="panel panel-success">
   <div class="panel-heading">
-       <h4>
-           <a href="{% url 'recipe' recipe.id %}">{{recipe.recipe_name}}</a>
-       </h4>
+      <div class="row">
+          <div class="col-xs-6 text-left">
+               <h4>
+                   <a href="{% url 'recipe' recipe.id %}">{{recipe.recipe_name}}</a>
+               </h4>
+          </div>
+          <div class="col-xs-6 text-right">
+              <input id="input-rating" >
+          </div>
+      </div>
   </div>
   <div class="panel-body">
       <div id="link{{recipe.id}}"></div>
@@ -146,7 +194,11 @@
     {% csrf_token %}
 </form>
 
-<textarea id="comment" name="comment" form="comment_form"></textarea>
+<textarea id="comment" name="comment" form="comment_form">
+    {% if not username.username %}
+        <h4 style="text-align: center;"><a href="/login">Авторизуйтесь</a>, чтобы оставлять комментарии</h4>
+    {% endif %}
+</textarea>
 <input name="recipe_id" value="{{recipe.id}}" hidden form="comment_form">
 
 {% if username.username %}

@@ -4,6 +4,15 @@
 {% load static %}
 
 <script>
+    var updateRating = function (recipe_id) {
+        $.ajax({
+            url: "/get_rating",
+            data: { id: recipe_id},
+            dataType: "json"
+        }).done(function(msg){
+            $("#input-rating-"+recipe_id).rating('update', parseFloat(msg.rating));
+        });
+    };
     $(document).ready(function() {
       $('[data-toggle="tooltip"]').tooltip();
     });
@@ -46,9 +55,42 @@
 
     <div class="panel panel-success">
       <div class="panel-heading">
-          <h4>
-              <a href="{% url 'recipe' recipe.id %}">{{recipe.recipe_name}}</a>
-          </h4>
+          <div class="row">
+              <div class="col-xs-6 text-left">
+                   <h4>
+                       <a href="{% url 'recipe' recipe.id %}">{{recipe.recipe_name}}</a>
+                   </h4>
+              </div>
+              <div class="col-xs-6 text-right">
+                  <input id="input-rating-{{recipe.id}}" >
+              </div>
+          </div>
+          <script>
+            $("#input-rating-{{recipe.id}}").rating({
+                size: 'xs',
+                showClear: false,
+                showCaption: false,
+                min: 0,
+                max: 5,
+                step:1,
+                emptyStar: '<i class="glyphicon glyphicon-apple"></i>',
+                filledStar: '<i class="glyphicon glyphicon-apple"></i>',
+                {% if not username.username %}
+                    disabled: true,
+                {% endif %}
+            });
+            $("#input-rating-{{recipe.id}}").on('rating.change', function (event, value) {
+                var recipe_id = {{recipe.id}};
+                $.ajax({
+                    url: "/add_rating",
+                    data: { id: recipe_id, val: value},
+                    dataType: "json"
+                }).done(function(msg){
+                    updateRating(recipe_id);
+                });
+            });
+            updateRating({{recipe.id}});
+          </script>
       </div>
       <div class="panel-body">
           <div id="link{{recipe.id}}"></div>
