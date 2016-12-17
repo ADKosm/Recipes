@@ -147,7 +147,22 @@ def most_commented(request):
     })
 
 def by_rating(request):
-    recipes_by_rating = Recipe.objects.all()
+    recipes_by_rating = Recipe.objects.raw('''
+        with ratings as (
+          SELECT DISTINCT
+            r.id,
+            case when avg(g.grade_stars) is null
+              then 0
+              else avg(g.grade_stars)
+            end rating
+          FROM rcps_recipe r
+            left JOIN rcps_grade g ON r.id = g.grade_recipe_id
+          group by r.id
+        ) select rec.*
+          from rcps_recipe rec
+            join ratings rat on rec.id = rat.id
+          ORDER BY rating DESC
+    ''')
     return render(request, 'list.html', {
         'recipes': recipes_by_rating,
         'username': auth.get_user(request)
@@ -190,7 +205,14 @@ def check_favourite(request):
 
 def favourite(request):
     user = auth.get_user(request)
-    favourite_recipes = Recipe.objects.all()
+    favourite_recipes = Recipe.objects.raw('''
+        select r.*
+        from (select * from auth_user where id = {user_id}) u
+        join rcps_grade g on u.id = g.grader_id
+        join rcps_recipe r on g.grade_recipe_id = r.id
+        where g.grade_favorite = true
+        order by g.grade_stars
+    '''.format(user_id=user.id))
     return render(request, 'list.html', {
         'recipes': favourite_recipes,
         'username': auth.get_user(request)
