@@ -13,7 +13,7 @@ from django.forms import Form
 import json
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.db.models import Avg
+from django.db.models import Avg, Count
 from rcps.models import Ingredient, Equipment, Recipe, Comment, Tag, Grade
 from rcps.selections import find_recipes, most_commented_recipes
 
@@ -219,7 +219,7 @@ def favourite(request):
     })
 
 def equipment(request):
-    eqs = Equipment.objects.all()
+    eqs = Equipment.objects.annotate(rec_num=Count('equipment_recipes')).order_by('-rec_num')
     return render(request, 'equipment.html', {
         'equipments': eqs,
         'username': auth.get_user(request)
