@@ -24,23 +24,36 @@
             <h1 id="site_header" class="navbar-text" >Recipes</h1>
         </a>
     </div>
-    <p class="navbar-text" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
+  <ul class="nav navbar-nav">
+  <li class="active">
+    <p class="navbar-text {% if "/tags" in request.path %}active-p{% endif %}" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
         <a href="/tags">По категориям</a>
     </p>
-    <p class="navbar-text" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
+  </li>
+  <li>
+    <p class="navbar-text {% if "/rating" in request.path %}active-p{% endif %}" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
         <a href="/rating">По рейтингу</a>
     </p>
-    <p class="navbar-text" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
+  </li>
+  <li>
+    <p class="navbar-text {% if "/mostcommented" in request.path %}active-p{% endif %}" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
         <a href="/mostcommented">Самые комментируемые</a>
     </p>
-    <p class="navbar-text" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
+  </li>
+  <li>
+    <p class="navbar-text {% if "/equipment" in request.path %}active-p{% endif %}" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
         <a href="/equipment">По инструментам</a>
     </p>
+  </li>
       {% if username.username %}
-        <p class="navbar-text" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
+      <li>
+        <p class="navbar-text {% if "/favourite" in request.path %}active-p{% endif %}" style="margin-top: 0px; margin-bottom: 0px; height: 70px; line-height: 70px;">
             <a href="/favourite">Избранное</a>
         </p>
+      </li>
       {% endif %}
+
+  </ul>
     <p class="navbar-text navbar-right navbar-login">
         {% if username.username %}
             Вы вошли как <a href="{% url 'user_page' username.id %}" class="navbar-link">{{ username.username }}</a> | <a href="/logout">Выйти</a>
