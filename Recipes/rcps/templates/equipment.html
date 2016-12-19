@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3 style="text-align: center;">Инструменты: </h3>
+<br>
+<div class="list-group">
+    {% for equipment in equipments %}
+        <a href="{% url 'by_equipment' equipment.id %}" class="list-group-item">
+            <span class="badge"><big>{{equipment.equipment_recipes.count}}</big></span>
+            <span class="badge" style="background-color: darkorange"><big>{{equipment.equipment_category.ecategory_name}}</big></span>
+            {{equipment.equipment_name}}
+        </a>
+    {% endfor %}
+</div>
+
+
+{% endblock %}

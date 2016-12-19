@@ -21,4 +21,6 @@ urlpatterns = [
     url(r'^add_fav', views.add_favourite, name="add_fav"),
     url(r'^is_fav', views.check_favourite, name="check_fav"),
     url(r'^favourite', views.favourite, name="favourite"),
+    url(r'^equipment', views.equipment, name="euipment"),
+    url(r'^by_equipment/(?P<equipment_id>[0-9]+)', views.by_equipment, name="by_equipment"),
 ]

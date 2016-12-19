@@ -25,3 +25,7 @@ body {
 .ing-element, .eq-element {
     margin-bottom: 10px;
 }
+
+.active-p {
+    background-color: #e5c956;
+}
