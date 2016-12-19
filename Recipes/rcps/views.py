@@ -217,3 +217,20 @@ def favourite(request):
         'recipes': favourite_recipes,
         'username': auth.get_user(request)
     })
+
+def equipment(request):
+    eqs = Equipment.objects.all()
+    return render(request, 'equipment.html', {
+        'equipments': eqs,
+        'username': auth.get_user(request)
+    })
+
+def by_equipment(request, equipment_id):
+    eq = Equipment.objects.get(pk=equipment_id)
+    recipes = eq.equipment_recipes.all()
+    return render(request, 'list.html', {
+        'recipes': recipes,
+        'equipments': [eq],
+        'eia': True,
+        'username': auth.get_user(request)
+    })
