@@ -4,9 +4,15 @@ $( document ).ready(function() {
     var getId = function(str){
         var idReg = /\w+-\w+-(\d+)/;
         return parseInt(str.replace(idReg, "$1"), 10);
-    }
+    };
 
     var setLiveQueryIng = function(id) {
+         $("#ing"+id).find("input").keypress(function(e) {
+             if (e.which == 13) {
+                $("#live-query-ing").html("");
+                return false;    //<---- Add this line
+             }
+         });
          $("#ing"+id).find("input").on("input", function(){
             var pref = $(this).val();
             $.ajax({
@@ -23,6 +29,12 @@ $( document ).ready(function() {
     }
 
     var setLiveQueryEq = function(id) {
+         $("#eq"+id).find("input").keypress(function(e) {
+             if (e.which == 13) {
+                $("#live-query-eq").html("");
+                return false;    //<---- Add this line
+             }
+         });
         $("#eq"+id).find("input").on("input", function(){
             var pref = $(this).val();
             $.ajax({
